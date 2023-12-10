@@ -6,55 +6,93 @@ import java.sql.SQLException;
 import java.sql.*;
 import java.util.Scanner;
 public class lib {
-    public static void main(String[] args) throws SQLException {
-        Scanner scanner = new Scanner(System.in);
+    private static final String url = "jdbc:mysql://localhost:3306/crud";
+    private static final String user = "root";
+    private static final String mdp= "";
 
-        Connection maConnexion;
-        String mysqlAdresse = "localhost:3306";
-        String mysqlBdd = "crud";
-        String mysqlUser = "root";
-        String mysqlPassword = "";
+    public static void main(String[] args) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, user, mdp);
 
-        PreparedStatement maRequetePreparee;
+            Scanner scanner = new Scanner(System.in);
 
-        String requeteSql;
-        int id = 0;
-        ResultSet resultat;
+            while (true) {
+                System.out.println("Pour ce connecter tapez 1.");
+                System.out.println("Pour revenir sur le menu principale tapez 2");
 
-        Scanner sc = new Scanner(System.in);
+                int choice = scanner.nextInt();
+                scanner.nextLine();
 
+                switch (choice) {
+                    case 1:
+                        login(connection, scanner);
+                        break;
+                    case 2:
+                        System.out.println("Menu principal");
+                        System.exit(0);
+                    default:
+                        System.out.println("Erreur ! Tapez 1 pour ce connecter  ou tapez 2 pour revenir sur le menu principale.");
+                }
+            }
 
-        String prenom;
-        String nom;
-        String age;
-
-
-        System.out.println("Connexion à la base de donnée... ");
-
-        Connection connexion = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/crud","root","");
-        System.out.println("Connexion ok ! Avec les informations suivantes :");
-        System.out.println("- url : \"jdbc:mysql://localhost:3306/crud\"? serverTimezone=UTC'");
-        System.out.println("- user : root");
-        System.out.println("- mot de passe : '' " );
-
-        System.out.print("Connectez vous en saisissant votre email et mot de passe: ");
-
-        String email = scanner.next();
-        String mpd = scanner.next();
-
-        requeteSql = "INSERT INTO exemple (nom,prenom,email,mdp,age) VALUES ('MaPremièreRequête',10,50.05)
-
-        System.out.println("Préparation à l'exécution de la requête -> '" + requeteSql+ "'..." );
-        maRequetePreparee = maConnexion.prepareStatement(requeteSql);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
     }
 
+    private static void login(Connection connection, Scanner scanner) throws SQLException {
+        System.out.println("Entrez votre email");
+        String email = scanner.nextLine();
+
+        System.out.println("Entrez votre mot de passe:");
+        String mdp = scanner.nextLine();
+
+        if (isValidUser(connection, email, mdp)) {
+            System.out.println("Vous etes connecter !");
+        } else {
+            System.out.println("Mots de passe ou email faux.");
+
+            System.out.println("Pour ce connecter tapez 1.");
+            System.out.println("Pour revenir sur le menu principale tapez 2");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Vous etes connecter. \n \n \n \n \n \n\n \n \n \n");
+
+                    String query = "SELECT * FROM user";
+
+                    PreparedStatement preparedStatement = connection.prepareStatement(query);
+                    ResultSet resultSet = preparedStatement.executeQuery();
+
+                    while (resultSet.next()) {
+                        String username = resultSet.getString("nom_utilisateur");
+                        String password = resultSet.getString("mot_de_passe");
+                        System.out.println("Utilisateur: " + username + ", Mot de passe: " + password);
+                    }
 
 
+                    login(connection, scanner);
+                    break;
+                case 2:
+                    break;
+                default:
+                    System.out.println("Erreur." );
+            }
+        }
+    }
 
-
-
-
-
-
+    private static boolean isValidUser(Connection connection, String email, String mdp) throws SQLException {
+        String sql = "SELECT * FROM user WHERE email = ? AND mdp = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, mdp);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return resultSet.next();
+        }
+    }
+    
 }
