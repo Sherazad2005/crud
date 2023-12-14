@@ -86,13 +86,58 @@ public class lib {
     }
 
     private static boolean isValidUser(Connection connection, String email, String mdp) throws SQLException {
-        String sql = "SELECT * FROM user WHERE email = ? AND mdp = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, email);
-            preparedStatement.setString(2, mdp);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            return resultSet.next();
+        Scanner scanner = new Scanner(System.in);
+        boolean quitter = false;
+        while (!quitter) {
+            afficherMenu();
+            System.out.print("Choisissez une option : ");
+            int choix = scanner.nextInt();
+
+            switch (choix) {
+                case 1:
+                    listerUtilisateurs(connection);
+                    break;
+                case 2:
+                    rechercherUtilisateur(connection);
+                    break;
+                case 3:
+                    ajouterUtilisateur(connection);
+                    break;
+                case 4:
+                    quitter = true;
+                    break;
+                default:
+                    System.out.println("Option invalide. Veuillez choisir à nouveau.");
+            }
         }
+
+        System.out.println("Merci d'avoir utilisé l'application.");
+        return quitter;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
-    
+
+
+    private static void afficherMenu() {
+        System.out.println("\nMenu de l'Application :");
+        System.out.println("1. Lister les utilisateurs");
+        System.out.println("2. Rechercher un utilisateur");
+        System.out.println("3. Ajouter un utilisateur");
+        System.out.println("4. Quitter");
+    }
+
+    private static void listerUtilisateurs(Connection connection) {
+        // Implémentez la logique pour lister les utilisateurs depuis la base de données
+        System.out.println("Fonctionnalité non implémentée : Liste des utilisateurs");
+    }
+
+    private static void rechercherUtilisateur(Connection connection) {
+        // Implémentez la logique pour rechercher un utilisateur dans la base de données
+        System.out.println("Fonctionnalité non implémentée : Recherche d'utilisateur");
+    }
+
+    private static void ajouterUtilisateur(Connection connection) {
+        // Implémentez la logique pour ajouter un utilisateur dans la base de données
+        System.out.println("Fonctionnalité non implémentée : Ajout d'utilisateur");
+    }
 }
