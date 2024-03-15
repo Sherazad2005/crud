@@ -17,7 +17,7 @@ $res = $req->fetchAll();
 <a href="../src/controleur/TraitementEtatStock.php">Deconnexion</a>
 <table>
     <tr>
-        <th>nom_matiere</th>
+        <th>nom matiere</th>
         <th>id</th>
         <th>forme_meplat</th>
         <th>forme_rond</th>
